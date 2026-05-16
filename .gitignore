@@ -36,7 +36,7 @@ docker-compose.override.yml
 *.db-wal
 
 # ── Storage data ──────────────────────────────────────────────────────────────
-data/
+/data/
 
 # ── OS ────────────────────────────────────────────────────────────────────────
 .DS_Store
@@ -47,3 +47,4 @@ desktop.ini
 .idea/
 *.swp
 *.swo
+.claude/settings.local.json
