@@ -1,0 +1,50 @@
+services:
+  api:
+    build:
+      context: ./api
+      dockerfile: Dockerfile
+    # Port NOT exposed to host — only accessible via docker internal network
+    expose:
+      - "2718"
+    environment:
+      ASPNETCORE_URLS: "http://+:2718"
+      ASPNETCORE_ENVIRONMENT: "${ASPNETCORE_ENVIRONMENT:-Production}"
+      Storage__Path: "${STORAGE_PATH:-/data/storage}"
+      Admin__Password: "${ADMIN_PASSWORD:-changeme}"
+      Encryption__Key: "${ENCRYPTION_KEY:-}"
+    volumes:
+      - storage_data:${STORAGE_PATH:-/data/storage}
+    networks:
+      - internal
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "curl -sf http://localhost:2718/admin/setup || exit 0"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
+
+  web:
+    build:
+      context: ./web
+      dockerfile: Dockerfile
+    ports:
+      - "${WEB_PORT:-3141}:3141"
+    environment:
+      PORT: "3141"
+      HOSTNAME: "0.0.0.0"
+      API_INTERNAL_URL: "${API_INTERNAL_URL:-http://api:2718}"
+      ADMIN_PASSWORD: "${ADMIN_PASSWORD:-changeme}"
+    depends_on:
+      api:
+        condition: service_healthy
+    networks:
+      - internal
+    restart: unless-stopped
+
+networks:
+  internal:
+    driver: bridge
+
+volumes:
+  storage_data:
