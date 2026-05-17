@@ -9,6 +9,7 @@ public record StorageEvent(
     string? Key = null,
     long? Size = null,
     string? ContentType = null,
+    string? Sha256 = null,
     string Timestamp = "")
 {
     public static StorageEvent BucketCreated(string bucket) =>
@@ -17,11 +18,11 @@ public record StorageEvent(
     public static StorageEvent BucketDeleted(string bucket) =>
         new("bucket.deleted", bucket, Timestamp: DateTime.UtcNow.ToString("o"));
 
-    public static StorageEvent ObjectCreated(string bucket, string key, long size, string contentType) =>
-        new("object.created", bucket, key, size, contentType, DateTime.UtcNow.ToString("o"));
+    public static StorageEvent ObjectCreated(string bucket, string key, long size, string contentType, string? sha256 = null) =>
+        new("object.created", bucket, key, size, contentType, sha256, DateTime.UtcNow.ToString("o"));
 
-    public static StorageEvent ObjectUpdated(string bucket, string key, long size, string contentType) =>
-        new("object.updated", bucket, key, size, contentType, DateTime.UtcNow.ToString("o"));
+    public static StorageEvent ObjectUpdated(string bucket, string key, long size, string contentType, string? sha256 = null) =>
+        new("object.updated", bucket, key, size, contentType, sha256, DateTime.UtcNow.ToString("o"));
 
     public static StorageEvent ObjectDeleted(string bucket, string key) =>
         new("object.deleted", bucket, key, Timestamp: DateTime.UtcNow.ToString("o"));

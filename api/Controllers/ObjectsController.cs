@@ -174,8 +174,8 @@ public class ObjectsController(StorageDbContext db, IStorageService storage, Not
         await db.SaveChangesAsync();
 
         StorageEvent evt = isUpdate
-            ? StorageEvent.ObjectUpdated(bucket, key, size, contentType)
-            : StorageEvent.ObjectCreated(bucket, key, size, contentType);
+            ? StorageEvent.ObjectUpdated(bucket, key, size, contentType, sha256)
+            : StorageEvent.ObjectCreated(bucket, key, size, contentType, sha256);
         await notifications.BroadcastAsync(evt);
 
         Response.Headers.ETag = $"\"{etag}\"";
@@ -334,8 +334,8 @@ public class ObjectsController(StorageDbContext db, IStorageService storage, Not
         storage.DeleteTempParts(uploadId);
 
         StorageEvent evt = isUpdate
-            ? StorageEvent.ObjectUpdated(bucket, key, size, upload.ContentType)
-            : StorageEvent.ObjectCreated(bucket, key, size, upload.ContentType);
+            ? StorageEvent.ObjectUpdated(bucket, key, size, upload.ContentType, sha256)
+            : StorageEvent.ObjectCreated(bucket, key, size, upload.ContentType, sha256);
         await notifications.BroadcastAsync(evt);
 
         Response.ContentType = "application/xml";
