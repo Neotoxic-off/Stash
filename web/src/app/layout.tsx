@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { JetBrains_Mono } from "next/font/google";
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { Navbar } from "@/components/Navbar";
 import "./globals.css";
 
 const jetbrainsMono = JetBrains_Mono({
@@ -26,7 +25,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     >
       <body className="min-h-screen bg-background font-mono antialiased">
         <TooltipProvider delay={300}>
-          <Navbar />
           {children}
           <Toaster richColors position="bottom-right" />
         </TooltipProvider>
