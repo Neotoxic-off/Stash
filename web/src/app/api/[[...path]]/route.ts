@@ -18,6 +18,12 @@ function forwardHeaders(req: NextRequest): Record<string, string> {
   req.headers.forEach((v, k) => {
     if (!skip.has(k.toLowerCase())) out[k] = v;
   });
+  // Extract key ID from AWS SDK Authorization header → X-Access-Key
+  if (!out['x-access-key']) {
+    const auth = req.headers.get('authorization') ?? '';
+    const m = auth.match(/Credential=([^/,\s]+)/);
+    if (m) out['x-access-key'] = m[1];
+  }
   return out;
 }
 

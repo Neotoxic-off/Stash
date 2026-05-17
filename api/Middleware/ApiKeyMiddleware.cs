@@ -18,6 +18,18 @@ public class ApiKeyMiddleware(RequestDelegate next)
         string? key = context.Request.Headers["X-Access-Key"].FirstOrDefault()
             ?? context.Request.Query["accessKey"].FirstOrDefault();
 
+        // AWS SDK sends Authorization: AWS4-HMAC-SHA256 Credential=KEYID/... — extract key ID
+        if (string.IsNullOrEmpty(key))
+        {
+            string? auth = context.Request.Headers["Authorization"].FirstOrDefault();
+            if (!string.IsNullOrEmpty(auth))
+            {
+                System.Text.RegularExpressions.Match m =
+                    System.Text.RegularExpressions.Regex.Match(auth, @"Credential=([^/,\s]+)");
+                if (m.Success) key = m.Groups[1].Value;
+            }
+        }
+
         if (string.IsNullOrEmpty(key) || key.Length > 128)
         {
             context.Response.StatusCode = 403;
