@@ -3,15 +3,17 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useState, useEffect } from 'react';
-import { KeyRound, Settings2, Wifi, WifiOff, Activity } from 'lucide-react';
+import { KeyRound, Settings2, Wifi, WifiOff, Activity, LogOut } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import { useRouter } from 'next/navigation';
 import { api, getAccessKey } from '@/lib/api';
 import { ConfigDialog } from './ConfigDialog';
 
 export function Navbar() {
   const pathname = usePathname();
+  const router = useRouter();
   const [configOpen, setConfigOpen] = useState(false);
   const [keyId, setKeyId] = useState('');
   const [connected, setConnected] = useState(false);
@@ -114,6 +116,20 @@ export function Navbar() {
               <Settings2 className="h-4 w-4" />
             </TooltipTrigger>
             <TooltipContent>Configure access key</TooltipContent>
+          </Tooltip>
+
+          {/* Logout */}
+          <Tooltip>
+            <TooltipTrigger
+              className="inline-flex h-8 w-8 items-center justify-center rounded-lg hover:bg-muted hover:text-destructive transition-colors"
+              onClick={async () => {
+                await fetch('/api/auth/logout', { method: 'POST' });
+                router.push('/login');
+              }}
+            >
+              <LogOut className="h-4 w-4" />
+            </TooltipTrigger>
+            <TooltipContent>Sign out</TooltipContent>
           </Tooltip>
         </div>
       </header>
